@@ -1,11 +1,12 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { WizardState, Business, NicheType, VisualStyle } from "../types";
 import { config } from "../config";
 import { searchSerpAPI } from "./serpApiService";
 
-const apiKey = config.gemini.apiKey;
-const ai = new GoogleGenAI({ apiKey });
+// Corrigido: Inicialização direta usando process.env.API_KEY conforme as diretrizes.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Helper para normalizar texto (remover acentos e lowercase)
 const normalizeText = (text: string) => {
@@ -238,7 +239,12 @@ export const searchRealBusinesses = async (
   try {
     console.log(`Tentando Google Places API (Text Search) para ${niche} em ${city}...`);
     
+    // Correção: Obtém a chave do objeto de configuração centralizado.
     const apiKey = config.googlePlaces.apiKey;
+
+    if (!apiKey) {
+      throw new Error("Google Places API Key não está configurada.");
+    }
     
     const query = `${niche} em ${city}, ${district}`;
     
@@ -266,7 +272,9 @@ export const searchRealBusinesses = async (
     });
     
     if (!response.ok) {
-        throw new Error(`Google API Error: ${response.status}`);
+        const errorData = await response.json();
+        console.error("Google Places Error:", errorData?.error?.message || response.status);
+        throw new Error(errorData?.error?.message || `Google API Error: ${response.status}`);
     }
 
     const data = await response.json();

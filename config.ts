@@ -1,17 +1,30 @@
+// ATENÇÃO: As chaves de API devem ser fornecidas exclusivamente por meio de variáveis de ambiente.
+// Nenhuma chave deve ser hard-coded neste arquivo.
+
+// Helper para ler variáveis de ambiente do Vite de forma segura
+const getViteEnv = (key: string): string | undefined => {
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env[key];
+  }
+  return undefined;
+};
 
 export const config = {
   gemini: {
-    // FIX: API key must be read from process.env.API_KEY as per the guidelines.
+    // A chave do Gemini é tratada de forma especial e lida via process.env.API_KEY no ambiente de execução.
     apiKey: process.env.API_KEY
   },
   googlePlaces: {
-    apiKey: process.env.VITE_GOOGLE_PLACES_API_KEY || 'AIzaSyDHQj2vXLd9M3P8zN0wK5yR6tF7sU1vW2x'
+    // Lendo a chave do Google Places a partir de variáveis de ambiente do cliente (Vite).
+    apiKey: getViteEnv('VITE_GOOGLE_PLACES_API_KEY')
   },
   serpApi: {
-    apiKey: process.env.VITE_SERPAPI_KEY || '5567f02c5e813b1981ebf25c661d3a1fc6a9c0c22f2e78666c1e6ab8ab0008d9'
+    // Lendo a chave da SerpAPI a partir de variáveis de ambiente do cliente (Vite).
+    apiKey: getViteEnv('VITE_SERPAPI_KEY')
   },
   supabase: {
-    url: process.env.VITE_SUPABASE_URL || 'https://jdjhdbqecdrxnjgojzle.supabase.co',
-    anonKey: process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkamhkYnFlY2RyeG5qZ29qemxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODM2MTEsImV4cCI6MjA3OTc1OTYxMX0.Vl_4APeOsXXzCr9jJ1oKQ6m5KtAkyo8oWKdBTz-5cCs'
+    // Lendo as credenciais do Supabase a partir de variáveis de ambiente do cliente (Vite).
+    url: getViteEnv('VITE_SUPABASE_URL'),
+    anonKey: getViteEnv('VITE_SUPABASE_ANON_KEY')
   }
 };
